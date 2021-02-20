@@ -388,19 +388,14 @@ def set_corne_footprints():
     }.items():
         set_module(ref, m)
 
-    for sw_ref in [
-        "SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15",
-        "SW16", "SW17", "SW18", "SW19", "SW20", "SW21",
-        "SW22", "SW23", "SW24", "SW25", "SW26", "SW27", "SW28", "SW29", "SW30", "SW31", "SW32", "SW33", "SW34", "SW35",
-        "SW36", "SW37", "SW38", "SW39", "SW40", "SW41", "SW42"
-    ]:
-        i = sw_ref.replace('SW', '')
+    for i in range(42):
+        sw_ref = "SW"+str(i+1)
         module = pcb.FindModuleByReference(sw_ref)
         sw_p = module.GetPosition()
         sw_rad = module.GetOrientationRadians()
         sw_deg = module.GetOrientationDegrees()
-        set_module("D"+i, {"p": mp(sw_p, rp(p(7.500, 0), sw_rad)), "degree": 90+sw_deg, "flip": True})
-        set_module("LED"+i, {"p": mp(sw_p, rp(p(0, 4.75), sw_rad)), "degree": sw_deg, "flip": True})
+        set_module("D"+str(i+1), {"p": mp(sw_p, rp(p(7.500, 0), sw_rad)), "degree": 90+sw_deg, "flip": True})
+        set_module("LED"+str(i+1), {"p": mp(sw_p, rp(p(0, 4.75), sw_rad)), "degree": sw_deg, "flip": True})
 
     pcbnew.Refresh()
 
@@ -408,13 +403,9 @@ def draw_corne_track():
     pcb = pcbnew.GetBoard()
 
     # draw switch to diode
-    for ref in [
-        "SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15",
-        "SW16", "SW17", "SW18", "SW19", "SW20", "SW21",
-        "SW22", "SW23", "SW24", "SW25", "SW26", "SW27", "SW28", "SW29", "SW30", "SW31", "SW32", "SW33", "SW34", "SW35",
-        "SW36", "SW37", "SW38", "SW39", "SW40", "SW41", "SW42"
-    ]:
-        module = pcb.FindModuleByReference(ref)
+    for i in range(42):
+        sw_ref = "SW" + str(i+1)
+        module = pcb.FindModuleByReference(sw_ref)
         sw_p = module.GetPosition()
         sw_rad = module.GetOrientationRadians()
         draw_tracks([
