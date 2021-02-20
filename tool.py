@@ -297,8 +297,8 @@ def set_corne_footprints():
     for ref, m in {
         # left
         "U1":     {"p": p(123.705, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J1":     {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
-        "J2":     {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
+        "J1":     {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
+        "J2":     {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
         "SH1":    {"p": p(18.500,  25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH2":    {"p": p(18.500,  44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH3":    {"p": p(94.500,  22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
@@ -342,8 +342,8 @@ def set_corne_footprints():
         "BT4":    {"p": p(47.000,  63.325), "degree": 0,   "flip": False},  # Break Away Tab
         # right
         "U2":     {"p": p(150.795, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J3":     {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
-        "J4":     {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
+        "J3":     {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
+        "J4":     {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
         "SH6":    {"p": p(256.000, 25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH7":    {"p": p(256.000, 44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH8":    {"p": p(180.000, 22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
