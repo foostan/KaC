@@ -4,8 +4,11 @@ import math
 def p(px, py):
     return pcbnew.wxPoint(px * 1000000, py * 1000000)
 
-def mp(p, mx, my):
-    return pcbnew.wxPoint(p.x + mx * 1000000, p.y + my * 1000000)
+def mp(p1, p2):
+    return pcbnew.wxPoint(p1.x + p2.x, p1.y + p2.y)
+
+def rp(p1, r):
+    return pcbnew.wxPoint(p1.x * math.cos(r) + p1.y * math.sin(r), p1.y * math.cos(r) - p1.x * math.sin(r))
 
 def d(p1, p2):
     return math.sqrt((p2.x - p1.x)**2 + (p2.y - p1.y)**2) / 1000000
@@ -281,189 +284,124 @@ def draw_corne_edge_cuts():
     ], p(0, 0))
     pcbnew.Refresh()
 
+def set_module(ref, m):
+    pcb = pcbnew.GetBoard()
+    module = pcb.FindModuleByReference(ref)
+    if (module.IsFlipped() and not m["flip"]) or (not module.IsFlipped() and m["flip"]):
+        module.Flip(module.GetPosition())
+    module.SetPosition(m["p"])
+    module.SetOrientation(m["degree"] * 10.0)
+
 def set_corne_footprints():
     pcb = pcbnew.GetBoard()
     for ref, m in {
         # left
-        "U1":    {"p": p(123.705, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J1":    {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
-        "J2":    {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
-        "SH1":   {"p": p(18.500,  25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH2":   {"p": p(18.500,  44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH3":   {"p": p(94.500,  22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH4":   {"p": p(61.660,  61.870), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH5":   {"p": p(108.220, 69.480), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "TH1":   {"p": p(116.760, 54.600), "degree": 0,   "flip": False},  # M2 Thread Hole
-        "TH2":   {"p": p(131.190, 63.120), "degree": 0,   "flip": False},  # M2 Thread Hole
-        "RSW1":  {"p": p(131.315, 46.875), "degree": 270, "flip": False},
-        "SW1":   {"p": p(9.000,   16.125), "degree": 0,   "flip": False},
-        "SW2":   {"p": p(28.000,  16.125), "degree": 0,   "flip": False},
-        "SW3":   {"p": p(47.000,  11.375), "degree": 0,   "flip": False},
-        "SW4":   {"p": p(66.000,   9.000), "degree": 0,   "flip": False},
-        "SW5":   {"p": p(85.000,  11.375), "degree": 0,   "flip": False},
-        "SW6":   {"p": p(104.000, 13.750), "degree": 0,   "flip": False},
-        "SW7":   {"p": p(9.000,   35.125), "degree": 0,   "flip": False},
-        "SW8":   {"p": p(28.000,  35.125), "degree": 0,   "flip": False},
-        "SW9":   {"p": p(47.000,  30.375), "degree": 0,   "flip": False},
-        "SW10":  {"p": p(66.000,  28.000), "degree": 0,   "flip": False},
-        "SW11":  {"p": p(85.000,  30.375), "degree": 0,   "flip": False},
-        "SW12":  {"p": p(104.000, 32.750), "degree": 0,   "flip": False},
-        "SW13":  {"p": p(9.000,   54.125), "degree": 0,   "flip": False},
-        "SW14":  {"p": p(28.000,  54.125), "degree": 0,   "flip": False},
-        "SW15":  {"p": p(47.000,  49.375), "degree": 0,   "flip": False},
-        "SW16":  {"p": p(66.000,  47.000), "degree": 0,   "flip": False},
-        "SW17":  {"p": p(85.000,  49.375), "degree": 0,   "flip": False},
-        "SW18":  {"p": p(104.000, 51.750), "degree": 0,   "flip": False},
-        "SW19":  {"p": p(75.500,  69.000), "degree": 0,   "flip": False},
-        "SW20":  {"p": p(96.5000, 71.750), "degree": 345, "flip": False},
-        "SW21":  {"p": p(118.750, 75.500), "degree": 60,  "flip": False},
-        "D1":    {"p": p(16.500,  16.125), "degree": 90,  "flip": True},
-        "D2":    {"p": p(35.500,  16.125), "degree": 90,  "flip": True},
-        "D3":    {"p": p(54.375,  11.375), "degree": 90,  "flip": True},
-        "D4":    {"p": p(73.375,   9.000), "degree": 90,  "flip": True},
-        "D5":    {"p": p(92.375,  11.375), "degree": 90,  "flip": True},
-        "D6":    {"p": p(111.500, 13.750), "degree": 90,  "flip": True},
-        "D7":    {"p": p(16.500,  35.125), "degree": 90,  "flip": True},
-        "D8":    {"p": p(35.500,  35.125), "degree": 90,  "flip": True},
-        "D9":    {"p": p(54.375,  30.375), "degree": 90,  "flip": True},
-        "D10":   {"p": p(73.375,  28.000), "degree": 90,  "flip": True},
-        "D11":   {"p": p(92.375,  30.375), "degree": 90,  "flip": True},
-        "D12":   {"p": p(111.500, 32.750), "degree": 90,  "flip": True},
-        "D13":   {"p": p(16.500,  54.125), "degree": 90,  "flip": True},
-        "D14":   {"p": p(35.500,  54.125), "degree": 90,  "flip": True},
-        "D15":   {"p": p(54.375,  49.375), "degree": 90,  "flip": True},
-        "D16":   {"p": p(73.375,  47.000), "degree": 90,  "flip": True},
-        "D17":   {"p": p(92.375,  49.375), "degree": 90,  "flip": True},
-        "D18":   {"p": p(111.500, 51.750), "degree": 90,  "flip": True},
-        "D19":   {"p": p(65.000,  69.000), "degree": 90,  "flip": True},
-        "D20":   {"p": p(84.000,  69.000), "degree": 90,  "flip": True},
-        "D21":   {"p": p(87.000,  69.000), "degree": 90,  "flip": True},
-        "LED1":  {"p": p(28.000,  25.625), "degree": 180, "flip": True},  # WS2812B
-        "LED2":  {"p": p(66.000,  18.500), "degree": 180, "flip": True},  # WS2812B
-        "LED3":  {"p": p(104.000, 23.250), "degree": 180, "flip": True},  # WS2812B
-        "LED4":  {"p": p(28.000,  44.625), "degree": 180, "flip": True},  # WS2812B
-        "LED5":  {"p": p(66.000,  56.500), "degree": 180, "flip": True},  # WS2812B
-        "LED6":  {"p": p(104.000, 61.250), "degree": 180, "flip": True},  # WS2812B
-        "LED7":  {"p": p(9.000,   20.875), "degree": 0,   "flip": True},
-        "LED8":  {"p": p(28.000,  20.875), "degree": 0,   "flip": True},
-        "LED9":  {"p": p(47.000,  16.125), "degree": 0,   "flip": True},
-        "LED10": {"p": p(66.000,  13.750), "degree": 0,   "flip": True},
-        "LED11": {"p": p(85.000,  16.125), "degree": 0,   "flip": True},
-        "LED12": {"p": p(104.000, 18.500), "degree": 0,   "flip": True},
-        "LED13": {"p": p(9.000,   39.875), "degree": 0,   "flip": True},
-        "LED14": {"p": p(28.000,  39.875), "degree": 0,   "flip": True},
-        "LED15": {"p": p(47.000,  35.125), "degree": 0,   "flip": True},
-        "LED16": {"p": p(66.000,  32.750), "degree": 0,   "flip": True},
-        "LED17": {"p": p(85.000,  35.125), "degree": 0,   "flip": True},
-        "LED18": {"p": p(104.000, 37.500), "degree": 0,   "flip": True},
-        "LED19": {"p": p(9.000,   58.875), "degree": 0,   "flip": True},
-        "LED20": {"p": p(28.000,  58.875), "degree": 0,   "flip": True},
-        "LED21": {"p": p(47.000,  54.125), "degree": 0,   "flip": True},
-        "LED22": {"p": p(66.000,  51.750), "degree": 0,   "flip": True},
-        "LED23": {"p": p(85.000,  54.125), "degree": 0,   "flip": True},
-        "LED24": {"p": p(104.000, 56.500), "degree": 0,   "flip": True},
-        "LED25": {"p": p(75.500,  73.750), "degree": 0,   "flip": True},
-        "LED26": {"p": p(95.270,  76.340), "degree": 345, "flip": True},
-        "LED27": {"p": p(122.865, 77.875), "degree": 60,  "flip": True},
-        "LOGO1": {"p": p(47.000,  61.385), "degree": 0,   "flip": False},
-        "LOGO2": {"p": p(46.790,  61.385), "degree": 180, "flip": True},
-        "BT1":   {"p": p(9.000,   6.925),  "degree": 0,   "flip": False},  # Break Away Tab
-        "BT2":   {"p": p(123.705, 6.925),  "degree": 0,   "flip": False},  # Break Away Tab
-        "BT3":   {"p": p(9.000,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
-        "BT4":   {"p": p(47.000,  63.325), "degree": 0,   "flip": False},  # Break Away Tab
+        "U1":     {"p": p(123.705, 26.765), "degree": 0,   "flip": False},  # Pro Micro
+        "J1":     {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
+        "J2":     {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
+        "SH1":    {"p": p(18.500,  25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH2":    {"p": p(18.500,  44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH3":    {"p": p(94.500,  22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH4":    {"p": p(61.660,  61.870), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH5":    {"p": p(108.220, 69.480), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "TH1":    {"p": p(116.760, 54.600), "degree": 0,   "flip": False},  # M2 Thread Hole
+        "TH2":    {"p": p(131.190, 63.120), "degree": 0,   "flip": False},  # M2 Thread Hole
+        "RSW1":   {"p": p(131.315, 46.875), "degree": 270, "flip": False},
+        "SW1":    {"p": p(9.000,   16.125), "degree": 0,   "flip": False},
+        "SW2":    {"p": p(28.000,  16.125), "degree": 0,   "flip": False},
+        "SW3":    {"p": p(47.000,  11.375), "degree": 0,   "flip": False},
+        "SW4":    {"p": p(66.000,   9.000), "degree": 0,   "flip": False},
+        "SW5":    {"p": p(85.000,  11.375), "degree": 0,   "flip": False},
+        "SW6":    {"p": p(104.000, 13.750), "degree": 0,   "flip": False},
+        "SW7":    {"p": p(9.000,   35.125), "degree": 0,   "flip": False},
+        "SW8":    {"p": p(28.000,  35.125), "degree": 0,   "flip": False},
+        "SW9":    {"p": p(47.000,  30.375), "degree": 0,   "flip": False},
+        "SW10":   {"p": p(66.000,  28.000), "degree": 0,   "flip": False},
+        "SW11":   {"p": p(85.000,  30.375), "degree": 0,   "flip": False},
+        "SW12":   {"p": p(104.000, 32.750), "degree": 0,   "flip": False},
+        "SW13":   {"p": p(9.000,   54.125), "degree": 0,   "flip": False},
+        "SW14":   {"p": p(28.000,  54.125), "degree": 0,   "flip": False},
+        "SW15":   {"p": p(47.000,  49.375), "degree": 0,   "flip": False},
+        "SW16":   {"p": p(66.000,  47.000), "degree": 0,   "flip": False},
+        "SW17":   {"p": p(85.000,  49.375), "degree": 0,   "flip": False},
+        "SW18":   {"p": p(104.000, 51.750), "degree": 0,   "flip": False},
+        "SW19":   {"p": p(75.500,  69.000), "degree": 0,   "flip": False},
+        "SW20":   {"p": p(96.5000, 71.750), "degree": 345, "flip": False},
+        "SW21":   {"p": p(118.750, 75.500), "degree": 60,  "flip": False},
+        "ULED1":  {"p": p(28.000,  25.625), "degree": 180, "flip": True},  # WS2812B
+        "ULED2":  {"p": p(66.000,  18.500), "degree": 180, "flip": True},  # WS2812B
+        "ULED3":  {"p": p(104.000, 23.250), "degree": 180, "flip": True},  # WS2812B
+        "ULED4":  {"p": p(28.000,  44.625), "degree": 180, "flip": True},  # WS2812B
+        "ULED5":  {"p": p(66.000,  56.500), "degree": 180, "flip": True},  # WS2812B
+        "ULED6":  {"p": p(104.000, 61.250), "degree": 180, "flip": True},  # WS2812B
+        "LOGO1":  {"p": p(47.000,  61.385), "degree": 0,   "flip": False},
+        "LOGO2":  {"p": p(46.790,  61.385), "degree": 180, "flip": True},
+        "BT1":    {"p": p(9.000,   6.925),  "degree": 0,   "flip": False},  # Break Away Tab
+        "BT2":    {"p": p(123.705, 6.925),  "degree": 0,   "flip": False},  # Break Away Tab
+        "BT3":    {"p": p(9.000,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
+        "BT4":    {"p": p(47.000,  63.325), "degree": 0,   "flip": False},  # Break Away Tab
         # right
-        "U2":    {"p": p(150.795, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J3":    {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
-        "J4":    {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
-        "SH6":   {"p": p(256.000, 25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH7":   {"p": p(256.000, 44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH8":   {"p": p(180.000, 22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH9":   {"p": p(212.840, 61.870), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "SH10":  {"p": p(166.280, 69.480), "degree": 0,   "flip": False},  # M2 Spacer Hole
-        "TH3":   {"p": p(157.740, 54.600), "degree": 0,   "flip": False},  # M2 Thread Hole
-        "TH4":   {"p": p(143.310,  63.12), "degree": 0,   "flip": False},  # M2 Thread Hole
-        "RSW2":  {"p": p(143.195, 46.875), "degree": 270, "flip": False},
-        "SW22":  {"p": p(265.500, 16.125), "degree": 0,   "flip": False},
-        "SW23":  {"p": p(246.500, 16.125), "degree": 0,   "flip": False},
-        "SW24":  {"p": p(227.500, 11.375), "degree": 0,   "flip": False},
-        "SW25":  {"p": p(208.500,  9.000), "degree": 0,   "flip": False},
-        "SW26":  {"p": p(189.500, 11.375), "degree": 0,   "flip": False},
-        "SW27":  {"p": p(170.500, 13.750), "degree": 0,   "flip": False},
-        "SW28":  {"p": p(265.500, 35.125), "degree": 0,   "flip": False},
-        "SW29":  {"p": p(246.500, 35.125), "degree": 0,   "flip": False},
-        "SW30":  {"p": p(227.500, 30.375), "degree": 0,   "flip": False},
-        "SW31":  {"p": p(208.500, 28.000), "degree": 0,   "flip": False},
-        "SW32":  {"p": p(189.500, 30.375), "degree": 0,   "flip": False},
-        "SW33":  {"p": p(170.500, 32.750), "degree": 0,   "flip": False},
-        "SW34":  {"p": p(265.500, 54.125), "degree": 0,   "flip": False},
-        "SW35":  {"p": p(246.500, 54.125), "degree": 0,   "flip": False},
-        "SW36":  {"p": p(227.500, 49.375), "degree": 0,   "flip": False},
-        "SW37":  {"p": p(208.500, 47.000), "degree": 0,   "flip": False},
-        "SW38":  {"p": p(189.500, 49.375), "degree": 0,   "flip": False},
-        "SW39":  {"p": p(170.500, 51.750), "degree": 0,   "flip": False},
-        "SW40":  {"p": p(199.000, 69.000), "degree": 0,   "flip": False},
-        "SW41":  {"p": p(178.000, 71.750), "degree": 15,  "flip": False},
-        "SW42":  {"p": p(155.750, 75.500), "degree": 300, "flip": False},
-        "D22":   {"p": p(273.000, 16.125), "degree": 90,  "flip": True},
-        "D23":   {"p": p(254.000, 16.125), "degree": 90,  "flip": True},
-        "D24":   {"p": p(235.125, 11.375), "degree": 90,  "flip": True},
-        "D25":   {"p": p(216.125,  9.000), "degree": 90,  "flip": True},
-        "D26":   {"p": p(197.125, 11.375), "degree": 90,  "flip": True},
-        "D27":   {"p": p(178.000, 13.750), "degree": 90,  "flip": True},
-        "D28":   {"p": p(273.000, 35.125), "degree": 90,  "flip": True},
-        "D29":   {"p": p(254.000, 35.125), "degree": 90,  "flip": True},
-        "D30":   {"p": p(235.125, 30.375), "degree": 90,  "flip": True},
-        "D31":   {"p": p(216.125, 28.000), "degree": 90,  "flip": True},
-        "D32":   {"p": p(197.125, 30.375), "degree": 90,  "flip": True},
-        "D33":   {"p": p(178.000, 32.750), "degree": 90,  "flip": True},
-        "D34":   {"p": p(273.000, 54.125), "degree": 90,  "flip": True},
-        "D35":   {"p": p(254.000, 54.125), "degree": 90,  "flip": True},
-        "D36":   {"p": p(235.125, 49.375), "degree": 90,  "flip": True},
-        "D37":   {"p": p(216.125, 47.000), "degree": 90,  "flip": True},
-        "D38":   {"p": p(197.125, 49.375), "degree": 90,  "flip": True},
-        "D39":   {"p": p(178.000, 51.750), "degree": 90,  "flip": True},
-        "D40":   {"p": p(206.500, 69.000), "degree": 90,  "flip": True},
-        "D41":   {"p": p(188.500, 69.000), "degree": 90,  "flip": True},
-        "D42":   {"p": p(185.500, 69.000), "degree": 90,  "flip": True},
-        "LED28": {"p": p(246.500, 25.625), "degree": 180, "flip": True},  # WS2812B
-        "LED29": {"p": p(208.500, 18.500), "degree": 180, "flip": True},  # WS2812B
-        "LED30": {"p": p(170.500, 23.250), "degree": 180, "flip": True},  # WS2812B
-        "LED31": {"p": p(246.500, 44.625), "degree": 180, "flip": True},  # WS2812B
-        "LED32": {"p": p(208.500, 56.500), "degree": 180, "flip": True},  # WS2812B
-        "LED33": {"p": p(170.500, 61.250), "degree": 180, "flip": True},  # WS2812B
-        "LED34": {"p": p(265.500, 20.875), "degree": 0,   "flip": True},
-        "LED35": {"p": p(246.500, 20.875), "degree": 0,   "flip": True},
-        "LED36": {"p": p(227.500, 16.125), "degree": 0,   "flip": True},
-        "LED37": {"p": p(208.500, 13.750), "degree": 0,   "flip": True},
-        "LED38": {"p": p(189.500, 16.125), "degree": 0,   "flip": True},
-        "LED39": {"p": p(170.500, 18.500), "degree": 0,   "flip": True},
-        "LED40": {"p": p(265.500, 39.875), "degree": 0,   "flip": True},
-        "LED41": {"p": p(246.500, 39.875), "degree": 0,   "flip": True},
-        "LED42": {"p": p(227.500, 35.125), "degree": 0,   "flip": True},
-        "LED43": {"p": p(208.500, 32.750), "degree": 0,   "flip": True},
-        "LED44": {"p": p(189.500, 35.125), "degree": 0,   "flip": True},
-        "LED45": {"p": p(170.500, 37.500), "degree": 0,   "flip": True},
-        "LED46": {"p": p(265.500, 58.875), "degree": 0,   "flip": True},
-        "LED47": {"p": p(246.500, 58.875), "degree": 0,   "flip": True},
-        "LED48": {"p": p(227.500, 54.125), "degree": 0,   "flip": True},
-        "LED49": {"p": p(208.500, 51.750), "degree": 0,   "flip": True},
-        "LED50": {"p": p(189.500, 54.125), "degree": 0,   "flip": True},
-        "LED51": {"p": p(170.500, 56.500), "degree": 0,   "flip": True},
-        "LED52": {"p": p(199.000, 73.750), "degree": 0,   "flip": True},
-        "LED53": {"p": p(179.235, 76.340), "degree": 15,  "flip": True},
-        "LED54": {"p": p(151.645, 77.875), "degree": 300, "flip": True},
-        "LOGO3": {"p": p(227.460, 61.385), "degree": 0,   "flip": False},
-        "LOGO4": {"p": p(227.250, 61.385), "degree": 180, "flip": True},
-        "BT5":   {"p": p(150.795,  6.925), "degree": 0,   "flip": False},  # Break Away Tab
-        "BT6":   {"p": p(265.5,    6.925), "degree": 0,   "flip": False},  # Break Away Tab
-        "BT7":   {"p": p(227.5,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
-        "BT8":   {"p": p(265.5,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
+        "U2":     {"p": p(150.795, 26.765), "degree": 0,   "flip": False},  # Pro Micro
+        "J3":     {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
+        "J4":     {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
+        "SH6":    {"p": p(256.000, 25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH7":    {"p": p(256.000, 44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH8":    {"p": p(180.000, 22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH9":    {"p": p(212.840, 61.870), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "SH10":   {"p": p(166.280, 69.480), "degree": 0,   "flip": False},  # M2 Spacer Hole
+        "TH3":    {"p": p(157.740, 54.600), "degree": 0,   "flip": False},  # M2 Thread Hole
+        "TH4":    {"p": p(143.310,  63.12), "degree": 0,   "flip": False},  # M2 Thread Hole
+        "RSW2":   {"p": p(143.195, 46.875), "degree": 270, "flip": False},
+        "SW22":   {"p": p(265.500, 16.125), "degree": 0,   "flip": False},
+        "SW23":   {"p": p(246.500, 16.125), "degree": 0,   "flip": False},
+        "SW24":   {"p": p(227.500, 11.375), "degree": 0,   "flip": False},
+        "SW25":   {"p": p(208.500,  9.000), "degree": 0,   "flip": False},
+        "SW26":   {"p": p(189.500, 11.375), "degree": 0,   "flip": False},
+        "SW27":   {"p": p(170.500, 13.750), "degree": 0,   "flip": False},
+        "SW28":   {"p": p(265.500, 35.125), "degree": 0,   "flip": False},
+        "SW29":   {"p": p(246.500, 35.125), "degree": 0,   "flip": False},
+        "SW30":   {"p": p(227.500, 30.375), "degree": 0,   "flip": False},
+        "SW31":   {"p": p(208.500, 28.000), "degree": 0,   "flip": False},
+        "SW32":   {"p": p(189.500, 30.375), "degree": 0,   "flip": False},
+        "SW33":   {"p": p(170.500, 32.750), "degree": 0,   "flip": False},
+        "SW34":   {"p": p(265.500, 54.125), "degree": 0,   "flip": False},
+        "SW35":   {"p": p(246.500, 54.125), "degree": 0,   "flip": False},
+        "SW36":   {"p": p(227.500, 49.375), "degree": 0,   "flip": False},
+        "SW37":   {"p": p(208.500, 47.000), "degree": 0,   "flip": False},
+        "SW38":   {"p": p(189.500, 49.375), "degree": 0,   "flip": False},
+        "SW39":   {"p": p(170.500, 51.750), "degree": 0,   "flip": False},
+        "SW40":   {"p": p(199.000, 69.000), "degree": 0,   "flip": False},
+        "SW41":   {"p": p(178.000, 71.750), "degree": 15,  "flip": False},
+        "SW42":   {"p": p(155.750, 75.500), "degree": 300, "flip": False},
+        "ULED7":  {"p": p(246.500, 25.625), "degree": 180, "flip": True},  # WS2812B
+        "ULED8":  {"p": p(208.500, 18.500), "degree": 180, "flip": True},  # WS2812B
+        "ULED9":  {"p": p(170.500, 23.250), "degree": 180, "flip": True},  # WS2812B
+        "ULED10": {"p": p(246.500, 44.625), "degree": 180, "flip": True},  # WS2812B
+        "ULED11": {"p": p(208.500, 56.500), "degree": 180, "flip": True},  # WS2812B
+        "ULED12": {"p": p(170.500, 61.250), "degree": 180, "flip": True},  # WS2812B
+        "LOGO3":  {"p": p(227.460, 61.385), "degree": 0,   "flip": False},
+        "LOGO4":  {"p": p(227.250, 61.385), "degree": 180, "flip": True},
+        "BT5":    {"p": p(150.795,  6.925), "degree": 0,   "flip": False},  # Break Away Tab
+        "BT6":    {"p": p(265.5,    6.925), "degree": 0,   "flip": False},  # Break Away Tab
+        "BT7":    {"p": p(227.5,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
+        "BT8":    {"p": p(265.5,   63.325), "degree": 0,   "flip": False},  # Break Away Tab
     }.items():
-        module = pcb.FindModuleByReference(ref)
-        if (module.IsFlipped() and not m["flip"]) or (not module.IsFlipped() and m["flip"]):
-            module.Flip(module.GetPosition())
-        module.SetPosition(m["p"])
-        module.SetOrientation(m["degree"] * 10.0)
+        set_module(ref, m)
+
+    for sw_ref in [
+        "SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15",
+        "SW16", "SW17", "SW18", "SW19", "SW20", "SW21",
+        "SW22", "SW23", "SW24", "SW25", "SW26", "SW27", "SW28", "SW29", "SW30", "SW31", "SW32", "SW33", "SW34", "SW35",
+        "SW36", "SW37", "SW38", "SW39", "SW40", "SW41", "SW42"
+    ]:
+        i = sw_ref.replace('SW', '')
+        module = pcb.FindModuleByReference(sw_ref)
+        sw_p = module.GetPosition()
+        sw_rad = module.GetOrientationRadians()
+        sw_deg = module.GetOrientationDegrees()
+        set_module("D"+i, {"p": mp(sw_p, rp(p(7.500, 0), sw_rad)), "degree": 90+sw_deg, "flip": True})
+        set_module("LED"+i, {"p": mp(sw_p, rp(p(0, 4.75), sw_rad)), "degree": sw_deg, "flip": True})
+
     pcbnew.Refresh()
 
 def draw_corne_track():
@@ -471,15 +409,18 @@ def draw_corne_track():
 
     # draw switch to diode
     for ref in [
-        "SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15", "SW16", "SW17", "SW18",
-        "SW22", "SW23", "SW24", "SW25", "SW26", "SW27", "SW28", "SW29", "SW30", "SW31", "SW32", "SW33", "SW34", "SW35", "SW36", "SW37", "SW38", "SW39"
+        "SW1", "SW2", "SW3", "SW4", "SW5", "SW6", "SW7", "SW8", "SW9", "SW10", "SW11", "SW12", "SW13", "SW14", "SW15",
+        "SW16", "SW17", "SW18", "SW19", "SW20", "SW21",
+        "SW22", "SW23", "SW24", "SW25", "SW26", "SW27", "SW28", "SW29", "SW30", "SW31", "SW32", "SW33", "SW34", "SW35",
+        "SW36", "SW37", "SW38", "SW39", "SW40", "SW41", "SW42"
     ]:
         module = pcb.FindModuleByReference(ref)
-        psw = module.GetPosition()
+        sw_p = module.GetPosition()
+        sw_rad = module.GetOrientationRadians()
         draw_tracks([
-            {"p": mp(psw, 5.85, -5.125), "r": 0.0},
-            {"p": mp(psw, 7.50, -5.125), "r": 1.0},
-            {"p": mp(psw, 7.50, -1.875), "r": 0.0}
+            {"p": mp(sw_p, rp(p(5.85, -5.125), sw_rad)), "r": 0.0},
+            {"p": mp(sw_p, rp(p(7.50, -5.125), sw_rad)), "r": 1.0},
+            {"p": mp(sw_p, rp(p(7.50, -1.875), sw_rad)), "r": 0.0}
         ], p(0, 0), pcbnew.B_Cu)
 
     pcbnew.Refresh()
