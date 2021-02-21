@@ -4,9 +4,6 @@ import math
 def p(px, py):
     return pcbnew.wxPoint(px * 1000000, py * 1000000)
 
-def mp(p1, p2):
-    return pcbnew.wxPoint(p1.x + p2.x, p1.y + p2.y)
-
 def rp(p1, r):
     return pcbnew.wxPoint(p1.x * math.cos(r) + p1.y * math.sin(r), p1.y * math.cos(r) - p1.x * math.sin(r))
 
@@ -412,13 +409,21 @@ def set_corne_footprints():
         sw_p = module.GetPosition()
         sw_rad = module.GetOrientationRadians()
         sw_deg = module.GetOrientationDegrees()
-        set_module("D"+str(i+1), {"p": mp(sw_p, rp(p(7.500, 0), sw_rad)), "degree": 90+sw_deg, "flip": True})
-        set_module("LED"+str(i+1), {"p": mp(sw_p, rp(p(0, 4.75), sw_rad)), "degree": sw_deg, "flip": True})
+        set_module("D"+str(i+1), {"p": sw_p+rp(p(7.500, 0), sw_rad), "degree": 90+sw_deg, "flip": True})
+        set_module("LED"+str(i+1), {"p": sw_p+rp(p(0, 4.75), sw_rad), "degree": sw_deg, "flip": True})
 
+    pcbnew.Refresh()
+
+def clear_tracks():
+    pcb = pcbnew.GetBoard()
+    for t in pcb.GetTracks():
+        t.DeleteStructure()
     pcbnew.Refresh()
 
 def draw_corne_track():
     pcb = pcbnew.GetBoard()
+
+    clear_tracks()
 
     # draw switch to diode
     for i in range(42):
@@ -427,25 +432,37 @@ def draw_corne_track():
         sw_p = module.GetPosition()
         sw_rad = module.GetOrientationRadians()
         draw_tracks([
-            {"p": mp(sw_p, rp(p(5.85, -5.125), sw_rad)), "r": 0.0},
-            {"p": mp(sw_p, rp(p(7.50, -5.125), sw_rad)), "r": 1.0},
-            {"p": mp(sw_p, rp(p(7.50, -1.875), sw_rad)), "r": 0.0}
+            {"p": sw_p+rp(p(5.85, -5.125), sw_rad), "r": 0.0},
+            {"p": sw_p+rp(p(7.50, -5.125), sw_rad), "r": 1.0},
+            {"p": sw_p+rp(p(7.50, -1.875), sw_rad), "r": 0.0}
         ], p(0, 0), pcbnew.B_Cu)
 
-    # diode to diode
-    draw_tracks([
-        {"p": p(16.500, 17.875), "r": 0.0},
-        {"p": p(17.500, 17.875), "r": 0.0, "v": True},
-        {"p": p(17.500, 17.875), "r": 0.0},
-        {"p": p(20.875, 17.875), "r": 2.0},
-        {"p": p(20.875, 11.000), "r": 2.0},
-        {"p": p(24.250, 11.000), "r": 1.0},
-        {"p": p(26.250, 11.000), "r": 1.0},
-        {"p": p(31.125, 14.500), "r": 1.0},
-        {"p": p(31.125, 17.875), "r": 2.0},
-        {"p": p(34.500, 17.875), "r": 0.0, "v": True},
-        {"p": p(35.500, 17.875), "r": 0.0},
-    ], p(0, 0), pcbnew.B_Cu)
+
+    # draw diode to diode
+    for m in [
+        {"col": ["SW2", "SW8", "SW14"], "my": 0},
+        {"col": ["SW3", "SW9", "SW15"], "my": 4.75},
+        {"col": ["SW4", "SW10", "SW16"], "my": 2.375},
+        {"col": ["SW5", "SW11", "SW17", "SW6", "SW12", "SW18"], "my": -2.375},
+        {"col": ["SW26", "SW32", "SW38", "SW25", "SW31", "SW37"], "my": 2.375},
+        {"col": ["SW24", "SW30", "SW36"], "my": -2.375},
+        {"col": ["SW23", "SW29", "SW35"], "my": -4.75},
+        {"col": ["SW22", "SW28", "SW34"], "my": 0},
+    ]:
+        my = m["my"]
+        for sw_ref in m["col"]:
+            module = pcb.FindModuleByReference(sw_ref)
+            sw_p = module.GetPosition()
+            draw_tracks([
+                {"p": sw_p+p(-11.50, +1.750+my), "r": 0.0},
+                {"p": sw_p+p(-9.000, +1.750+my), "r": 1.0},
+                {"p": sw_p+p(-9.000, -4.500), "r": 1.0},
+                {"p": sw_p+p(-5.500, -4.500), "r": 1.0},
+                {"p": sw_p+p(-3.500, -5.000), "r": 1.0},
+                {"p": sw_p+p(+3.125, -1.625), "r": 1.0},
+                {"p": sw_p+p(+3.125, +1.750), "r": 1.0},
+                {"p": sw_p+p(+7.500, +1.750), "r": 0.0},
+            ], p(0, 0), pcbnew.B_Cu)
 
     pcbnew.Refresh()
 
