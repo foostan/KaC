@@ -72,6 +72,16 @@ def show_drawings():
         print(d.GetLayerName())
         print(d.GetPosition())
 
+def via(p1, width=600000):
+    pcb = pcbnew.GetBoard()
+    v = pcbnew.VIA(pcb)
+    pcb.Add(v)
+    v.SetPosition(p1)
+    v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+    v.SetWidth(width)
+
+    return v
+
 def track(p1, p2, layer, width):
     pcb = pcbnew.GetBoard()
     t = pcbnew.TRACK(pcb)
@@ -90,6 +100,7 @@ def track_coords(coords, offset, layer, width):
 
 def draw_tracks(points, offset, layer):
     coords = []
+    current_layer = layer
 
     for i in range(len(points)):
         r = points[i]["r"]
@@ -101,7 +112,14 @@ def draw_tracks(points, offset, layer):
         coords += curve(a, b, c, r)
         # coords += [b]
 
-    track_coords(coords, offset, layer, 250000)
+        if "v" in points[i].keys() and points[i]["v"]:
+            track_coords(coords, offset, current_layer, 250000)
+            current_layer = pcbnew.B_Cu if current_layer == pcbnew.F_Cu else pcbnew.F_Cu
+            vp = coords[-1]
+            via(vp + offset)
+            coords = [coords[-1]]
+
+    track_coords(coords, offset, current_layer, 250000)
 
 def text(p, text):
     pcb = pcbnew.GetBoard()
@@ -297,8 +315,8 @@ def set_corne_footprints():
     for ref, m in {
         # left
         "U1":     {"p": p(123.705, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J1":     {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
-        "J2":     {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
+        "J1":     {"p": p(133.030, 54.635), "degree": 270, "flip": False},  # TRRS Jack
+        "J2":     {"p": p(119.840, 47.375), "degree": 0,   "flip": False},  # OLED Jack
         "SH1":    {"p": p(18.500,  25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH2":    {"p": p(18.500,  44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH3":    {"p": p(94.500,  22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
@@ -342,8 +360,8 @@ def set_corne_footprints():
         "BT4":    {"p": p(47.000,  63.325), "degree": 0,   "flip": False},  # Break Away Tab
         # right
         "U2":     {"p": p(150.795, 26.765), "degree": 0,   "flip": False},  # Pro Micro
-        "J3":     {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
-        "J4":     {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
+        "J3":     {"p": p(141.430, 54.635), "degree": 90,  "flip": False},  # TRRS Jack
+        "J4":     {"p": p(147.070, 47.373), "degree": 0,   "flip": False},  # OLED Jack
         "SH6":    {"p": p(256.000, 25.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH7":    {"p": p(256.000, 44.625), "degree": 0,   "flip": False},  # M2 Spacer Hole
         "SH8":    {"p": p(180.000, 22.063), "degree": 0,   "flip": False},  # M2 Spacer Hole
@@ -413,6 +431,21 @@ def draw_corne_track():
             {"p": mp(sw_p, rp(p(7.50, -5.125), sw_rad)), "r": 1.0},
             {"p": mp(sw_p, rp(p(7.50, -1.875), sw_rad)), "r": 0.0}
         ], p(0, 0), pcbnew.B_Cu)
+
+    # diode to diode
+    draw_tracks([
+        {"p": p(16.500, 17.875), "r": 0.0},
+        {"p": p(17.500, 17.875), "r": 0.0, "v": True},
+        {"p": p(17.500, 17.875), "r": 0.0},
+        {"p": p(20.875, 17.875), "r": 2.0},
+        {"p": p(20.875, 11.000), "r": 2.0},
+        {"p": p(24.250, 11.000), "r": 1.0},
+        {"p": p(26.250, 11.000), "r": 1.0},
+        {"p": p(31.125, 14.500), "r": 1.0},
+        {"p": p(31.125, 17.875), "r": 2.0},
+        {"p": p(34.500, 17.875), "r": 0.0, "v": True},
+        {"p": p(35.500, 17.875), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
 
     pcbnew.Refresh()
 
