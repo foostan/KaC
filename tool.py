@@ -60,7 +60,7 @@ def draw_edge_cuts(points, offset):
         coords += curve(a, b, c, r)
         # coords += [b]
 
-    draw_coords(coords, offset, pcbnew.Edge_Cuts, 10000)
+    draw_coords(coords, offset, pcbnew.Edge_Cuts, 200000)
 
 def show_drawings():
     pcb = pcbnew.GetBoard()
