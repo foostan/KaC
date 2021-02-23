@@ -454,14 +454,12 @@ def draw_corne_track():
             module = pcb.FindModuleByReference(sw_ref)
             sw_p = module.GetPosition()
             draw_tracks([
-                {"p": sw_p+p(-11.50, +1.750+my), "r": 0.0},
-                {"p": sw_p+p(-9.000, +1.750+my), "r": 1.0},
-                {"p": sw_p+p(-9.000, -4.500), "r": 1.0},
-                {"p": sw_p+p(-5.500, -4.500), "r": 1.0},
-                {"p": sw_p+p(-3.500, -5.000), "r": 1.0},
+                {"p": sw_p+p(-11.50, 1.750+my), "r": 0.0},
+                {"p": sw_p+p(-10.00, 1.750+my), "r": 1.0, "v": True},
+                {"p": sw_p+p(-5.000, -6.000), "r": 2.0, "v": True},
                 {"p": sw_p+p(+3.125, -1.625), "r": 1.0},
-                {"p": sw_p+p(+3.125, +1.750), "r": 1.0},
-                {"p": sw_p+p(+7.500, +1.750), "r": 0.0},
+                {"p": sw_p+p(+3.125, 1.750), "r": 1.0},
+                {"p": sw_p+p(+7.500, 1.750), "r": 0.0},
             ], p(0, 0), pcbnew.B_Cu)
 
     pcbnew.Refresh()
