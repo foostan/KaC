@@ -426,8 +426,8 @@ def draw_corne_track():
     clear_tracks()
 
     # draw switch to diode
-    for i in range(42):
-        sw_ref = "SW" + str(i+1)
+    for i in range(1, 43):
+        sw_ref = "SW" + str(i)
         module = pcb.FindModuleByReference(sw_ref)
         sw_p = module.GetPosition()
         sw_rad = module.GetOrientationRadians()
@@ -455,14 +455,31 @@ def draw_corne_track():
             sw_p = module.GetPosition()
             draw_tracks([
                 {"p": sw_p+p(-11.50, 1.750+my), "r": 0.0},
-                {"p": sw_p+p(-10.00, 1.750+my), "r": 1.0, "v": True},
-                {"p": sw_p+p(-5.000, -6.000), "r": 2.0, "v": True},
+                {"p": sw_p+p(-10.50, 1.750+my), "r": 0.0, "v": True},
+                {"p": sw_p+p(-9.00, 1.750+my), "r": 2.0},
+                {"p": sw_p+p(-5.000, -6.000), "r": 3.0},
                 {"p": sw_p+p(+3.125, -1.625), "r": 1.0},
                 {"p": sw_p+p(+3.125, 1.750), "r": 1.0},
+                {"p": sw_p+p(+6.500, 1.750), "r": 0.0, "v": True},
                 {"p": sw_p+p(+7.500, 1.750), "r": 0.0},
             ], p(0, 0), pcbnew.B_Cu)
 
+    # draw col switch to switch
+    for i in range(1, 13)+range(22, 34):
+        sw_ref = "SW" + str(i)
+        module = pcb.FindModuleByReference(sw_ref)
+        sw_p = module.GetPosition()
+        draw_tracks([
+            {"p": sw_p+p(-6.75, -2.54), "r": 0.0},
+            {"p": sw_p+p(-6.75, 1.54), "r": 0.0, "v": True},
+            {"p": sw_p+p(-6.75, 12.54), "r": 0.0, "v": True},
+            {"p": sw_p+p(-6.75, 16.54), "r": 0.0},
+        ], p(0, 0), pcbnew.B_Cu)
+
     pcbnew.Refresh()
+
+
+
 
 def run():
     draw_corne_edge_cuts()
