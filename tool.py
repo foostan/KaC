@@ -1,3 +1,5 @@
+# execfile('/Users/foostan/src/github.com/foostan/KaC/tool.py')
+
 import pcbnew
 import math
 
@@ -95,7 +97,7 @@ def track_coords(coords, offset, layer, width):
         end = coords[i+1]
         track(start + offset, end + offset, layer, width)
 
-def draw_tracks(points, offset, layer):
+def draw_tracks(points, offset, layer, width = 250000):
     coords = []
     current_layer = layer
 
@@ -110,13 +112,13 @@ def draw_tracks(points, offset, layer):
         # coords += [b]
 
         if "v" in points[i].keys() and points[i]["v"]:
-            track_coords(coords, offset, current_layer, 250000)
+            track_coords(coords, offset, current_layer, width)
             current_layer = pcbnew.B_Cu if current_layer == pcbnew.F_Cu else pcbnew.F_Cu
             vp = coords[-1]
             via(vp + offset)
             coords = [coords[-1]]
 
-    track_coords(coords, offset, current_layer, 250000)
+    track_coords(coords, offset, current_layer, width)
 
 def text(p, text):
     pcb = pcbnew.GetBoard()
@@ -440,29 +442,55 @@ def draw_corne_track():
 
     # draw diode to diode
     for m in [
-        {"col": ["SW2", "SW8", "SW14"], "my": 0},
+        {"col": ["SW2", "SW8", "SW14"]},
         {"col": ["SW3", "SW9", "SW15"], "my": 4.75},
         {"col": ["SW4", "SW10", "SW16"], "my": 2.375},
         {"col": ["SW5", "SW11", "SW17", "SW6", "SW12", "SW18"], "my": -2.375},
         {"col": ["SW26", "SW32", "SW38", "SW25", "SW31", "SW37"], "my": 2.375},
         {"col": ["SW24", "SW30", "SW36"], "my": -2.375},
         {"col": ["SW23", "SW29", "SW35"], "my": -4.75},
-        {"col": ["SW22", "SW28", "SW34"], "my": 0},
+        {"col": ["SW22", "SW28", "SW34"]},
+        {"col": ["SW20"], "mx": -1.75, "my": 0.25},
+        {"col": ["SW40"], "mx": -1.75, "my": 0.5},
     ]:
-        my = m["my"]
+        mx = m["mx"] if "mx" in m.keys() else 0
+        my = m["my"] if "my" in m.keys() else 0
         for sw_ref in m["col"]:
             module = pcb.FindModuleByReference(sw_ref)
             sw_p = module.GetPosition()
+            sw_rad = module.GetOrientationRadians()
             draw_tracks([
-                {"p": sw_p+p(-11.50, 1.750+my), "r": 0.0},
-                {"p": sw_p+p(-10.50, 1.750+my), "r": 0.0, "v": True},
-                {"p": sw_p+p(-9.00, 1.750+my), "r": 2.0},
-                {"p": sw_p+p(-5.000, -6.000), "r": 3.0},
-                {"p": sw_p+p(+3.125, -1.625), "r": 1.0},
-                {"p": sw_p+p(+3.125, 1.750), "r": 1.0},
-                {"p": sw_p+p(+6.500, 1.750), "r": 0.0, "v": True},
-                {"p": sw_p+p(+7.500, 1.750), "r": 0.0},
+                {"p": sw_p+rp(p(-11.50, 1.750), sw_rad)+p(mx, my), "r": 0.0},
+                {"p": sw_p+rp(p(-10.50, 1.750), sw_rad)+p(mx, my), "r": 0.0, "v": True},
+                {"p": sw_p+rp(p(-9.00, 1.750), sw_rad)+p(mx, my), "r": 2.0},
+                {"p": sw_p+rp(p(-5.000, -6.000), sw_rad), "r": 3.0},
+                {"p": sw_p+rp(p(+3.125, -1.625), sw_rad), "r": 1.0},
+                {"p": sw_p+rp(p(+3.125, 1.750), sw_rad), "r": 1.0},
+                {"p": sw_p+rp(p(+6.500, 1.750), sw_rad), "r": 0.0, "v": True},
+                {"p": sw_p+rp(p(+7.500, 1.750), sw_rad), "r": 0.0},
             ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW21").GetPosition()
+    draw_tracks([
+        {'p': sw_p + p(-15.5, -0.125), 'r': 0.0},
+        {'p': sw_p + p(-14.5, 0.125), 'r': 0.0, "v": True},
+        {'p': sw_p + p(-7.75, 1.25), 'r': 3.0},
+        {'p': sw_p + p(0.25, -3.50), 'r': 1.0},
+        {'p': sw_p + p(3.00, -1.75), 'r': 1.0},
+        {'p': sw_p + p(4.75, -4.75), 'r': 0.0, "v": True},
+        {'p': sw_p + p(5.25, -5.50), 'r': 0.0}
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW42").GetPosition()
+    draw_tracks([
+        {'p': sw_p + p(2.25, 7.5), 'r': 0.0},
+        {'p': sw_p + p(2.875, 8.5), 'r': 0.0, "v": True},
+        {'p': sw_p + p(4.5, 11.5), 'r': 3.0},
+        {'p': sw_p + p(14, 6), 'r': 3.0},
+        {'p': sw_p + p(32, 3.75), 'r': 3.0},
+        {'p': sw_p + p(30.375, -2.5), 'r': 0.0, "v": True},
+        {'p': sw_p + p(30, -4), 'r': 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
 
     # draw col switch to switch
     for i in range(1, 13)+range(22, 34):
@@ -477,9 +505,6 @@ def draw_corne_track():
         ], p(0, 0), pcbnew.B_Cu)
 
     pcbnew.Refresh()
-
-
-
 
 def run():
     draw_corne_edge_cuts()
