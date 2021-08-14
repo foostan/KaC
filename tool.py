@@ -539,6 +539,41 @@ def draw_corne_track():
                 {'p': led_p + p(21.75, 0.625+led["y"]), 'r': 0.0},
             ], p(0, 0), pcbnew.B_Cu, 500000)
 
+    # draw GND of LEDs
+    for led in [
+        {"refs": [6, 12, 18, 5, 11, 17], "y": -2.375},
+        {"refs": [4, 10, 16], "y": 2.375},
+        {"refs": [3, 9, 15], "y": 4.75},
+        {"refs": [2, 8, 14], "y": 0},
+    ]:
+        for ref in led["refs"]:
+            led_ref = "LED" + str(ref)
+            led_p = pcb.FindModuleByReference(led_ref).GetPosition()
+            draw_tracks([
+                {'p': led_p + p(-1.5, -2), 'r': 0.0},
+                {'p': led_p + p(-5, -2), 'r': 1.0},
+                {'p': led_p + p(-12, -2 + led["y"]), 'r': 1.0},
+                {'p': led_p + p(-21.75, -2 + led["y"]), 'r': 1.0},
+                {'p': led_p + p(-21.75, -0.625 + led["y"]), 'r': 0.0},
+            ], p(0, 0), pcbnew.B_Cu, 500000)
+
+    for led in [
+        {"refs": [27, 33, 39, 26, 32, 38], "y": -2.375},
+        {"refs": [25, 31, 37], "y": 2.375},
+        {"refs": [24, 30, 36], "y": 4.75},
+        {"refs": [23, 29, 35], "y": 0},
+    ]:
+        for ref in led["refs"]:
+            led_ref = "LED" + str(ref)
+            led_p = pcb.FindModuleByReference(led_ref).GetPosition()
+            draw_tracks([
+                {'p': led_p + p(-3.5, -2), 'r': 0.0},
+                {'p': led_p + p(5, -2), 'r': 1.0},
+                {'p': led_p + p(12, -2 + led["y"]), 'r': 1.0},
+                {'p': led_p + p(16.25, -2 + led["y"]), 'r': 1.0},
+                {'p': led_p + p(16.25, -0.625 + led["y"]), 'r': 0.0},
+            ], p(0, 0), pcbnew.B_Cu, 500000)
+
     # draw VCC of ULEDs
     for uled in [1, 2, 3, 4, 5, 6]:
         uled_ref = "ULED" + str(uled)
