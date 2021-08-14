@@ -500,7 +500,7 @@ def draw_corne_track():
         draw_tracks([
             {"p": sw_p+p(-6.75, -2.54), "r": 0.0},
             {"p": sw_p+p(-6.75, 1.25), "r": 0.0, "v": True},
-            {"p": sw_p+p(-6.75, 12.54), "r": 0.0, "v": True},
+            {"p": sw_p+p(-6.75, 13.00), "r": 0.0, "v": True},
             {"p": sw_p+p(-6.75, 16.54), "r": 0.0},
         ], p(0, 0), pcbnew.B_Cu)
 
@@ -533,8 +533,8 @@ def draw_corne_track():
             led_p = pcb.FindModuleByReference(led_ref).GetPosition()
             draw_tracks([
                 {'p': led_p + p(1.5, 2), 'r': 0.0},
-                {'p': led_p + p(6, 2), 'r': 2.0},
-                {'p': led_p + p(9, 2+led["y"]), 'r': 2.0},
+                {'p': led_p + p(7, 2), 'r': 2.0},
+                {'p': led_p + p(10, 2+led["y"]), 'r': 2.0},
                 {'p': led_p + p(21.75, 2+led["y"]), 'r': 1.0},
                 {'p': led_p + p(21.75, 0.625+led["y"]), 'r': 0.0},
             ], p(0, 0), pcbnew.B_Cu, 500000)
@@ -568,8 +568,8 @@ def draw_corne_track():
             led_p = pcb.FindModuleByReference(led_ref).GetPosition()
             draw_tracks([
                 {'p': led_p + p(-3.5, -2), 'r': 0.0},
-                {'p': led_p + p(9, -2), 'r': 2.0},
-                {'p': led_p + p(12, -2 + led["y"]), 'r': 2.0},
+                {'p': led_p + p(8, -2), 'r': 2.0},
+                {'p': led_p + p(11, -2 + led["y"]), 'r': 2.0},
                 {'p': led_p + p(16.25, -2 + led["y"]), 'r': 1.0},
                 {'p': led_p + p(16.25, -0.625 + led["y"]), 'r': 0.0},
             ], p(0, 0), pcbnew.B_Cu, 500000)
