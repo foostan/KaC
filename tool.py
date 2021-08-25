@@ -502,12 +502,14 @@ def draw_corne_track():
     sw_p = pcb.FindModuleByReference("SW42").GetPosition()
     draw_tracks([
         {'p': sw_p + p(2.75, 7.25), 'r': 0.0},
-        {'p': sw_p + p(3.375, 8.25), 'r': 0.0, "v": True},
-        {'p': sw_p + p(5.0, 11.25), 'r': 3.0},
-        {'p': sw_p + p(14, 6), 'r': 3.0},
-        {'p': sw_p + p(32, 3.75), 'r': 3.0},
-        {'p': sw_p + p(30.125, -3.5), 'r': 0.0, "v": True},
-        {'p': sw_p + p(29.75, -5), 'r': 0.0},
+        {'p': sw_p + p(3.375, 8), 'r': 0.0, "v": True},
+        {'p': sw_p + p(4, 9.0), 'r': 1.0},
+        {'p': sw_p + p(14, 3.25), 'r': 3.0},
+        {'p': sw_p + p(16, -8.5), 'r': 3.0},
+        {'p': sw_p + p(24.5, -6.5), 'r': 2.0},
+        {'p': sw_p + p(26.5, -2.25), 'r': 3.0},
+        {'p': sw_p + p(28.75, -4.5), 'r': 0.0, "v": True},
+        {'p': sw_p + p(29.75, -4.75), 'r': 0.0},
     ], p(0, 0), pcbnew.B_Cu)
 
     # draw col switch to switch
