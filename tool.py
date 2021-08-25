@@ -492,7 +492,9 @@ def draw_corne_track():
     draw_tracks([
         {'p': sw_p + p(-15.0, -0.75), 'r': 0.0},
         {'p': sw_p + p(-14.25, -0.50), 'r': 0.0, "v": True},
-        {'p': sw_p + p(-7.75, 1.25), 'r': 3.0},
+        {'p': sw_p + p(-13, 1.5), 'r': 2.0},
+        {'p': sw_p + p(-9.5, 4), 'r': 2.0},
+        {'p': sw_p + p(-6.0, 0), 'r': 2.0},
         {'p': sw_p + p(0.25, -3.50), 'r': 2.0},
         {'p': sw_p + p(4.25, -2.00), 'r': 3.0},
         {'p': sw_p + p(4.10, -5.10), 'r': 0.0, "v": True},
@@ -523,6 +525,66 @@ def draw_corne_track():
             {"p": sw_p + p(-6.75, 13.00), "r": 0.0, "v": True},
             {"p": sw_p + p(-6.75, 16.54), "r": 0.0},
         ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW16").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 10), "r": 3.0},
+        {"p": sw_p + p(2.5, 14), "r": 3.0},
+        {"p": sw_p + p(2.5, 17), "r": 0.0, "v": True},
+        {"p": sw_p + p(2.5, 19), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW17").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 10), "r": 3.0},
+        {"p": sw_p + p(5.5, 14), "r": 3.0},
+        {"p": sw_p + p(5.5, 16), "r": 0.0, "v": True},
+        {"p": sw_p + p(5.5, 19), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW18").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 10), "r": 3.0},
+        {"p": sw_p + p(0, 16), "r": 3.0},
+        {"p": sw_p + p(3, 25), "r": 3.0},
+        {"p": sw_p + p(5, 26.125), "r": 0.0, "v": True},
+        {"p": sw_p + p(9, 28.5), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW37").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 10), "r": 3.0},
+        {"p": sw_p + p(-16.5, 14), "r": 3.0},
+        {"p": sw_p + p(-16.5, 17), "r": 0.0, "v": True},
+        {"p": sw_p + p(-16.5, 19), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW38").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 13), "r": 3.0},
+        {"p": sw_p + p(-19.5, 16.5), "r": 3.0},
+        {"p": sw_p + p(-19.5, 20), "r": 0.0, "v": True},
+        {"p": sw_p + p(-19, 22), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
+
+    sw_p = pcb.FindModuleByReference("SW39").GetPosition()
+    draw_tracks([
+        {"p": sw_p + p(-6.75, -2.54), "r": 0.0},
+        {"p": sw_p + p(-6.75, 1.25), "r": 0.0, "v": True},
+        {"p": sw_p + p(-6.75, 10), "r": 3.0},
+        {"p": sw_p + p(-14, 15), "r": 0.0, "v": True},
+        {"p": sw_p + p(-16, 16), "r": 0.0},
+    ], p(0, 0), pcbnew.B_Cu)
 
     # draw VCC of LEDs
     for led in [
